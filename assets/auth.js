@@ -28,10 +28,10 @@ async function enter(vault, kRaw, id) {
   new Function(plaintext)();
   const learned = await C.decryptLearned(vault, kRaw);
   learned.forEach(o => { if (!window.OBJECTIONS.some(x => x.id === o.id)) window.OBJECTIONS.push(o); });
+  window.MM_USER = { id: session.id, name: session.name, role: session.role };
   setupAI();
   $('#login').classList.add('hide');
   $('#app').classList.remove('hide');
-  $('#whoami').textContent = session.name;
   if (session.role === 'admin') setupAdmin();
   window.startApp();
 }
@@ -123,7 +123,7 @@ $('#logout').addEventListener('click', () => { store.clear(); location.hash = ''
 
 // ───────── ניהול משתמשים (מנהל בלבד) ─────────
 function setupAdmin() {
-  document.querySelector('.tabs').insertAdjacentHTML('beforeend', '<a href="#admin">ניהול משתמשים</a>');
+  $('#tiles').insertAdjacentHTML('beforeend', '<a class="tile" href="#admin"><span class="ic">⚙️</span><span><b>ניהול משתמשים</b><small>הוספה, איפוס ומחיקה</small></span></a>');
   $('#v-admin').classList.remove('admin-off');
   const tok = $('#ghToken');
   try { tok.value = localStorage.getItem('mm-gh-token') || ''; } catch (e) {}
@@ -179,7 +179,7 @@ function setupAdmin() {
   renderUsers();
 }
 
-function msg(t, bad) { const m = $('#adminMsg'); m.textContent = t; m.style.color = bad ? 'var(--danger)' : 'var(--seller)'; }
+function msg(t, bad) { const m = $('#adminMsg'); m.textContent = t; m.style.color = bad ? 'var(--red)' : 'var(--green)'; }
 
 let latestVault = null;
 async function renderUsers() {
@@ -192,14 +192,14 @@ async function renderUsers() {
     rows.push(`<div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <b style="flex:1">${esc(name)}${me ? ' (את/ה)' : ''}</b><span class="badge ${u.role === 'admin' ? 'adv' : ''}">${u.role === 'admin' ? 'מנהל' : 'איש מכירות'}</span>
       <button class="chip" data-act="reset" data-id="${u.id}" data-name="${esc(name)}">איפוס סיסמה</button>
-      ${me ? '' : `<button class="chip" style="color:var(--danger)" data-act="del" data-id="${u.id}" data-name="${esc(name)}">מחיקה</button>`}</div>`);
+      ${me ? '' : `<button class="chip" style="color:var(--red)" data-act="del" data-id="${u.id}" data-name="${esc(name)}">מחיקה</button>`}</div>`);
   }
   $('#userList').innerHTML = rows.join('');
   const learned = await C.decryptLearned(v, session.kRaw);
   $('#learnedList').innerHTML = learned.length ? learned.map(o => `<div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
     <span style="flex:1"><b>״${esc(o.q)}״</b><br><small class="muted">${esc(o.by || '')} · ${esc(o.at || '')}</small></span>
     <button class="chip" data-act="view" data-id="${o.id}">הצג</button>
-    <button class="chip" style="color:var(--danger)" data-act="unlearn" data-id="${o.id}" data-name="${esc(o.q)}">מחק מהבנק</button></div>`).join('')
+    <button class="chip" style="color:var(--red)" data-act="unlearn" data-id="${o.id}" data-name="${esc(o.q)}">מחק מהבנק</button></div>`).join('')
     : '<p class="muted">עוד לא נוספו התנגדויות דרך "שאל את מנחם".</p>';
 }
 

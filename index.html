@@ -2,242 +2,191 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#070b17">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="מנחם המוכר">
 <title>מנחם המוכר</title>
-<meta name="description" content="תסריטי מכירה וטיפול בהתנגדויות לצוות המכירות של מכללת נטמי">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23e8590c'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>מ</text></svg>">
+<meta name="description" content="מערכת המכירות של צוות נטמי">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23ff5c2b'/><text x='50' y='68' font-size='58' text-anchor='middle'>🦈</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
+
 <div id="login" class="login hide">
   <form class="card login-card" id="loginForm">
-    <div class="logo" style="justify-content:center;margin-bottom:14px"><span class="logo-mark">מ</span><span class="logo-text"><b>מנחם המוכר</b><small>כניסה לצוות המכירות של נטמי</small></span></div>
-    <label>שם משתמש<input id="loginUser" autocomplete="username" required></label>
-    <label>סיסמה<input id="loginPass" type="password" autocomplete="current-password" required></label>
-    <label class="row"><input type="checkbox" id="remember"> זכור אותי במכשיר הזה</label>
-    <button class="btn" id="loginBtn" style="width:100%">כניסה</button>
-    <p id="loginErr" style="color:var(--danger);min-height:1.4em;margin:8px 0 0;text-align:center"></p>
-    <p class="muted" style="font-size:.82rem;text-align:center;margin:0">התוכן מוצפן ונפתח רק עם שם משתמש וסיסמה.</p>
+    <div class="brand" style="justify-content:center;margin-bottom:6px"><span class="brand-mark">🦈</span><span><b>מנחם המוכר</b><small>מערכת המכירות של נטמי</small></span></div>
+    <label class="lbl">שם משתמש<input class="field" id="loginUser" autocomplete="username" required></label>
+    <label class="lbl">סיסמה<input class="field" id="loginPass" type="password" autocomplete="current-password" required></label>
+    <label class="check"><input type="checkbox" id="remember" checked> זכור אותי במכשיר הזה</label>
+    <button class="btn block big" id="loginBtn">כניסה</button>
+    <p id="loginErr" style="color:var(--red);min-height:1.4em;text-align:center"></p>
   </form>
 </div>
-<div id="app" class="hide">
-<header class="top">
-  <div class="top-row">
-    <a class="logo" href="#home"><span class="logo-mark">מ</span><span class="logo-text"><b>מנחם המוכר</b><small>המאמן של צוות המכירות של נטמי</small></span></a>
+
+<div id="app" class="app hide">
+  <header class="topbar">
+    <span class="brand-mark">🦈</span><b>מנחם המוכר</b>
     <span class="spacer"></span>
-    <span class="muted" id="whoami" style="font-size:.85rem"></span>
-    <button class="theme-btn" id="themeBtn" aria-label="מצב תצוגה">◐</button>
-    <button class="theme-btn" id="logout">יציאה</button>
-  </div>
-  <nav class="tabs">
-    <a href="#home">בית</a>
-    <a href="#ask">🤖 שאל את מנחם</a>
-    <a href="#objections">בנק התנגדויות</a>
-    <a href="#scripts">תסריטי שיחה</a>
-    <a href="#match">מנוע התאמה</a>
-    <a href="#courses">הקורסים</a>
-    <a href="#calc">מחשבון מחיר</a>
-    <a href="#whatsapp">וואטסאפ</a>
-    <a href="#discovery">שאלות בירור</a>
-    <a href="#method">השיטה</a>
-    <a href="#train">אימון</a>
-    <a href="#rules">קווים אדומים</a>
+    <span class="xp-pill" id="xpPill"></span>
+    <button class="icon-btn" id="themeBtn" aria-label="מצב תצוגה">◐</button>
+    <button class="icon-btn" id="logout" aria-label="יציאה" title="יציאה">⎋</button>
+  </header>
+
+  <nav class="nav">
+    <a href="#call" class="call-tab" data-group="call"><span class="i">📞</span><span>שיחה</span></a>
+    <a href="#objections" data-group="objections"><span class="i">🛡️</span><span>התנגדויות</span></a>
+    <a href="#ai" data-group="ai"><span class="i">🤖</span><span>מנחם AI</span></a>
+    <a href="#train" data-group="train"><span class="i">🏆</span><span>אימון</span></a>
+    <a href="#more" data-group="more"><span class="i">☰</span><span>עוד</span></a>
   </nav>
-</header>
 
-<main>
-  <!-- HOME -->
-  <section class="view" id="v-home">
-    <div class="hero">
-      <h1>מנחם המוכר</h1>
-      <p>הלקוח אמר משהו ואתם לא בטוחים מה לענות? תקלידו מה הוא אמר, ותקבלו תסריט מלא.</p>
-      <div class="search"><input id="quickSearch" type="search" placeholder='למשל: יקר, להתייעץ, אין זמן, השמה…' autocomplete="off"></div>
-      <div class="results" id="quickResults"></div>
-      <h3 style="margin-top:20px;font-size:1rem;opacity:.85">ההתנגדויות שהכי נשמעות:</h3>
-      <div class="chips" id="hotChips"></div>
-    </div>
-
-    <div class="grid g3 section">
-      <div class="card stat"><b>2,490 ש"ח</b><span>קורס בודד (במקום 3,500)</span></div>
-      <div class="card stat"><b>5,000 ש"ח</b><span>חבילה של 4 קורסים (במקום 12,000), עד 12 תשלומים</span></div>
-      <div class="card stat"><b>1,250 ש"ח</b><span>כמה עולה כל קורס בתוך חבילה</span></div>
-      <div class="card stat"><b>2,400+</b><span>בוגרים מאז 2019</span></div>
-    </div>
-
-    <div class="grid g2 section">
-      <div class="card">
-        <h2>מבנה שיחת מכירה</h2>
-        <ol class="flow" id="homeFlow"></ol>
-        <p style="margin:14px 0 0"><a href="#scripts">לתסריט המלא ←</a></p>
+  <main>
+    <!-- ═══ שיחה ═══ -->
+    <section class="view" id="v-call" data-group="call">
+      <div id="callStart" class="card cockpit-start">
+        <div style="font-size:3rem">🦈</div>
+        <h1>שיחה של 3 דקות</h1>
+        <p>6 שלבים, משפטים מוכנים, והמלצה אוטומטית. כל השיחה במסך אחד.</p>
+        <p class="q-label" style="margin-bottom:8px">מאיפה הליד?</p>
+        <div class="chips" id="leadSrc" style="justify-content:center;margin-bottom:18px"></div>
+        <button class="btn big block" id="startCall">📞 התחל שיחה</button>
+        <div class="grid3 sec" id="callStats"></div>
       </div>
-      <div class="card">
-        <h2>לפני כל שיחה</h2>
-        <ul class="qlist">
-          <li>קראתי מה הליד השאיר (קורס, מקור: אתר, גלגל, בוטקאמפ).</li>
-          <li>מתקשרים תוך 5 דקות מהפנייה, לא תוך יום.</li>
-          <li>אני מאמין/ה במחיר ובקורס. ודאות מדבקת.</li>
-          <li>מוכן לי קישור לשיעור לדוגמה ולעמוד הקורס.</li>
-          <li>המטרה שלי היום: בקשת העסקה, ולא "לשלוח פרטים".</li>
-          <li>אחרי השיחה: לתעד את המילה הרגשית של הלקוח ומועד חזרה.</li>
-        </ul>
-        <h3 style="margin-top:18px">שלושה דברים שמבדילים</h3>
-        <ul class="qlist">
-          <li>שיעור לדוגמה חינמי בעמוד ה-CCNA ("תשפוט בעצמך").</li>
-          <li>ליווי אישי בוואטסאפ, גם ב-22:00.</li>
-          <li>מרצים מ-8200, ממר"ם ותקשוב, ואנשים שעובדים בתעשייה.</li>
-        </ul>
+      <div id="callRun" class="hide">
+        <div class="timer" id="timer"><span class="clock" id="clock">3:00</span><span class="bar"><i id="timeBar"></i></span><button class="copy" id="endCall">סיום</button></div>
+        <div class="stage-dots" id="stageDots"></div>
+        <div id="stageBody"></div>
+        <div class="stage-nav"><button class="btn ghost" id="prevStage">→ חזרה</button><button class="btn" id="nextStage">הבא ←</button></div>
       </div>
-    </div>
-  </section>
+      <button class="obj-fab hide" id="objFab">🛡️ הלקוח התנגד</button>
+    </section>
 
-  <!-- ASK -->
-  <section class="view" id="v-ask">
-    <h2>🤖 שאל את מנחם</h2>
-    <p class="lead">הלקוח אמר משהו שלא מופיע בבנק? כתבו מה הוא אמר, במילים שלו, ומנחם ינסח תשובה לפי השיטה שלנו ולפי הנתונים של נטמי. התנגדות חדשה נוספת אוטומטית לבנק, כדי שכל הצוות ייהנה ממנה.</p>
-    <div class="card">
-      <textarea id="aiInput" class="field" rows="3" placeholder='למשל: "אני מחכה לראות אם אקבל מלגה" או "חבר שלי עשה קורס ולא מצא עבודה"'></textarea>
-      <div class="btns" style="justify-content:flex-start;margin-top:10px"><button class="btn" id="aiAsk">תן לי תשובה</button></div>
-    </div>
-    <div id="aiOut" class="section"></div>
-  </section>
-
-  <!-- OBJECTIONS -->
-  <section class="view" id="v-objections">
-    <h2>בנק התנגדויות</h2>
-    <p class="lead">לכל התנגדות: מה באמת עומד מאחוריה, תסריט שלב-אחר-שלב, וטיפ. לחצו על התנגדות כדי לפתוח. אפשר להעתיק כל משפט.</p>
-    <div class="toolbar">
-      <div class="search"><input id="objSearch" type="search" placeholder="חיפוש: מה הלקוח אמר?" autocomplete="off"></div>
-      <button class="chip" id="expandAll">פתח/סגור הכול</button>
-    </div>
-    <div class="chips" id="objCats"></div>
-    <div class="grid section" id="objList" style="margin-top:16px"></div>
-    <p class="muted hide" id="objEmpty">לא נמצאה התנגדות. נסו מילה אחרת, או השתמשו בנוסחה הכללית: מסכימים, מבודדים ("אם זה היה תלוי רק בך"), שואלים "לגבי מה אתה עוד לא בטוח?", ושקט.</p>
-  </section>
-
-  <!-- SCRIPTS -->
-  <section class="view" id="v-scripts">
-    <h2>תסריטי שיחה מלאים</h2>
-    <p class="lead">תסריט לכל סוג ליד. ירוק: מה שאתם אומרים. סגול: מה שהלקוח עונה. צהוב: הנחיות ביצוע. התאימו לשון (זכר/נקבה) ללקוח.</p>
-    <div class="chips" id="scriptNav"></div>
-    <div id="scriptList"></div>
-  </section>
-
-  <!-- MATCH -->
-  <section class="view" id="v-match">
-    <h2>מנוע התאמה</h2>
-    <p class="lead">שלוש שאלות על הלקוח, ומקבלים המלצה על המסלול הנכון ומה להגיד לו. לקוח שמקבל המלצה אחת ברורה סוגר מהר יותר מלקוח שמקבל תפריט.</p>
-    <div id="matchQs"></div>
-    <div id="matchOut"></div>
-  </section>
-
-  <!-- COURSES -->
-  <section class="view" id="v-courses">
-    <h2>החבילות</h2>
-    <p class="lead">לכל קורס יש הסבר בשפה פשוטה, משל, פיץ' של 30 שניות ותשובה לשאלה נפוצה, בלי צורך ברקע טכני. החבילות הן המוצר הראשי. כל חבילה: 4 קורסים ב-5,000 ש"ח, עד 12 תשלומים, גישה מיידית לכולם.</p>
-    <div class="grid g2" id="bundleList"></div>
-    <h2 class="section">כל הקורסים</h2>
-    <p class="lead">כל קורס בודד: 2,490 ש"ח (במקום 3,500). כולל: עברית, מעבדות, גישה לכל החיים, ליווי בוואטסאפ ותעודת סיום.</p>
-    <div class="chips" id="courseFilter" style="margin-bottom:14px"></div>
-    <div class="grid g2" id="courseList"></div>
-    <h2 class="section">מילון מונחים</h2>
-    <p class="lead">המילים שהלקוח ישמע מכם, ומה הן אומרות בשפה פשוטה.</p>
-    <div class="grid g3" id="glossary"></div>
-  </section>
-
-  <!-- CALC -->
-  <section class="view" id="v-calc">
-    <h2>מחשבון מחיר</h2>
-    <p class="lead">סמנו את הקורסים שהלקוח רוצה. המחשבון יראה כמה זה עולה, אם עדיף לו חבילה, וכמה זה יוצא בחודש וביום.</p>
-    <div class="calc-list" id="calcList"></div>
-    <p style="margin-top:12px">מספר תשלומים: <select id="calcPays"></select></p>
-    <div class="card calc-out" id="calcOut"></div>
-  </section>
-
-  <!-- WHATSAPP -->
-  <section class="view" id="v-whatsapp">
-    <h2>תבניות וואטסאפ</h2>
-    <p class="lead">החליפו את מה שבסוגריים המרובעים. הודעה טובה היא קצרה, אישית, ונגמרת בשאלה.</p>
-    <div class="grid g2" id="waList"></div>
-  </section>
-
-  <!-- DISCOVERY -->
-  <section class="view" id="v-discovery">
-    <h2>בנק שאלות בירור</h2>
-    <p class="lead">השליטה שלכם בשיחה נמצאת בשאלות. שואלים, מקבלים תשובה, ורק אז ממשיכים. כשהלקוח אומר מילה רגשית ("נמאס", "תקוע"), שואלים "למה דווקא זה?".</p>
-    <div class="grid g2" id="discList"></div>
-  </section>
-
-  <!-- METHOD -->
-  <section class="view" id="v-method">
-    <h2>השיטה של מנחם</h2>
-    <p class="lead">14 עקרונות שעליהם בנוי כל תסריט באתר. נכתבו בהשראת השיטה של <span id="mentorName"></span>, מאמן מכירות עם 30 שנות ניסיון (<a id="mentorLink" target="_blank" rel="noopener">לערוץ היוטיוב</a>), והותאמו למכירת קורסים בנטמי.</p>
-    <div class="grid g2" id="principles"></div>
-    <h2 class="section">סרטוני חובה לצפייה</h2>
-    <p class="lead">5 דקות כל אחד. מומלץ: סרטון אחד כל בוקר לפני השיחה הראשונה.</p>
-    <div class="grid g2" id="videos"></div>
-  </section>
-
-  <!-- TRAIN -->
-  <section class="view" id="v-train">
-    <h2>חדר אימון</h2>
-    <p class="lead">מקבלים התנגדות. עונים בקול, כאילו הלקוח על הקו. אחר כך פותחים ובודקים. מה שלא שלטתם בו חוזר בסוף החפיסה. מומלץ: 10 דקות ביום, מרג'י ויוסי אחד מול השנייה.</p>
-    <div class="card flash">
-      <div class="muted" id="trainCat"></div>
-      <div class="q" id="trainQ"></div>
-      <div class="btns"><button class="btn" id="trainReveal">עניתי בקול, תראה לי</button></div>
-      <div id="trainA" class="hide" style="text-align:right;margin-top:16px"></div>
-      <div class="btns hide" id="trainRate" style="margin-top:16px">
-        <button class="btn" data-r="good">שלטתי ✓</button>
-        <button class="btn ghost" data-r="again">לחזור על זה ↻</button>
+    <!-- ═══ התנגדויות ═══ -->
+    <section class="view" id="v-objections" data-group="objections">
+      <div class="view-head"><h1>🛡️ התנגדויות</h1><p>הלקוח אמר משהו? תקלידו. משפט אחד מנצח, והתסריט המלא אם צריך.</p></div>
+      <div class="sticky-search">
+        <div class="search"><input id="objSearch" type="search" placeholder="מה הלקוח אמר?" autocomplete="off"></div>
+        <div class="chips scroll" id="objCats" style="margin-top:10px"></div>
       </div>
-      <p class="muted" id="trainScore" style="margin-top:14px"></p>
-      <button class="chip" id="trainRestart">ערבב מחדש</button>
-    </div>
-  </section>
+      <div class="stack" id="objList"></div>
+      <div class="card hide" id="objEmpty"><p><b>לא נמצא.</b> נסו מילה אחרת, או <a href="#ai">שאלו את מנחם AI ←</a></p></div>
+    </section>
 
-  <!-- RULES -->
-  <section class="view" id="v-rules">
-    <h2>קווים אדומים</h2>
-    <p class="lead">מכירה חזקה היא מכירה אמיתית. לקוח שקיבל הבטחה שלא מתקיימת הופך לביקורת רעה ולבקשת החזר. את אלה לא עושים אף פעם.</p>
-    <div class="grid g2" id="rulesList"></div>
-    <div class="card section">
-      <h3>פרטים שימושיים</h3>
-      <p style="margin:0">אתר: <a href="https://netme.co.il" target="_blank" rel="noopener">netme.co.il</a> · וואטסאפ: <a href="https://wa.me/972504998661" target="_blank" rel="noopener">050-4998661</a> · מייל: info@netme.co.il · הטבות החודש: <a href="https://netme.co.il/gift" target="_blank" rel="noopener">netme.co.il/gift</a> · בוטקאמפ חינמי: <a href="https://netme.co.il/bootcamp" target="_blank" rel="noopener">netme.co.il/bootcamp</a> · בלוג שאלות ראיון: <a href="https://netme.co.il/blog" target="_blank" rel="noopener">netme.co.il/blog</a></p>
-    </div>
-  </section>
-  <!-- ADMIN -->
-  <section class="view admin-off" id="v-admin">
-    <h2>ניהול משתמשים</h2>
-    <p class="lead">הוספה, איפוס סיסמה ומחיקה של אנשי מכירות. מחיקה מחליפה את מפתח ההצפנה, כך שמי שנמחק לא יכול להיכנס יותר, גם אם שמר את הסיסמה.</p>
-    <div class="card">
-      <h3>GitHub Token (פעם אחת, רק במכשיר שלך)</h3>
-      <p class="muted" style="font-size:.92rem">השינויים נשמרים ישירות במאגר ב-GitHub. צרו טוקן ב-<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained token</a>: Repository access → רק <b>menachem-hamocher</b>, Permissions → Contents: <b>Read and write</b>. הדביקו כאן. הטוקן נשמר רק בדפדפן הזה.</p>
-      <input id="ghToken" type="password" autocomplete="off" data-lpignore="true" placeholder="github_pat_…" class="field">
-    </div>
-    <form class="card section" id="addUser">
-      <h3>משתמש חדש</h3>
-      <div class="form-row">
-        <label>שם משתמש<input id="newName" class="field" autocomplete="off" required></label>
-        <label>סיסמה<input id="newPass" class="field" type="password" autocomplete="new-password" required minlength="8"></label>
-        <label>תפקיד<select id="newRole" class="field"><option value="user">איש מכירות</option><option value="admin">מנהל</option></select></label>
+    <!-- ═══ AI ═══ -->
+    <section class="view" id="v-ai" data-group="ai">
+      <div class="view-head"><h1>🤖 מנחם AI</h1><p>תשובה מיידית לכל התנגדות, ואימון מול לקוח קשוח.</p></div>
+      <div class="tabs2" id="aiTabs"><button class="on" data-t="ask">💬 שאל את מנחם</button><button data-t="rp">🥊 לקוח קשוח</button></div>
+      <div id="aiAskPane">
+        <div class="card stack">
+          <textarea id="aiInput" class="field" rows="2" placeholder='מה הלקוח אמר? למשל: "חבר שלי עשה קורס ולא מצא עבודה"'></textarea>
+          <div style="display:flex;gap:8px"><button class="btn" id="aiAsk" style="flex:1">⚡ תן לי תשובה</button><button class="mic" id="aiMic" title="דיבור">🎙️</button></div>
+        </div>
+        <div id="aiOut" class="sec"></div>
       </div>
-      <div class="btns" style="justify-content:flex-start;margin-top:12px"><button class="btn">הוסף משתמש</button><button type="button" class="btn ghost" id="genPass">צור סיסמה חזקה</button></div>
-    </form>
-    <p id="adminMsg" style="font-weight:700;margin-top:14px"></p>
-    <div class="grid section" id="userList"></div>
-    <h2 class="section">התנגדויות שנוספו ע"י ה-AI</h2>
-    <p class="lead">כל התנגדות חדשה ששואלים ב"שאל את מנחם" נשמרת כאן ובבנק. עברו עליהן מדי פעם, ומחקו תשובה שלא מתאימה.</p>
-    <div class="grid" id="learnedList"></div>
-  </section>
-</main>
+      <div id="aiRpPane" class="hide"></div>
+    </section>
 
-<footer class="foot">מנחם המוכר · לשימוש פנימי של צוות המכירות של מכללת נטמי · הנתונים נכונים לנובמבר 2026, לפי netme.co.il</footer>
+    <!-- ═══ אימון ═══ -->
+    <section class="view" id="v-train" data-group="train">
+      <div id="trainHome">
+        <div class="view-head"><h1>🏆 אימון</h1><p>כל יום 2 דקות. צוברים נקודות, עולים בדרגה, ומטפסים בטבלה.</p></div>
+        <div class="card rank-card" id="rankCard"></div>
+        <div class="stack sec">
+          <button class="card mode" data-mode="blitz"><span class="ic">⚡</span><span><b>בליץ התנגדויות</b><small class="muted">10 התנגדויות, 15 שניות לכל אחת. רצף = בונוס.</small></span></button>
+          <button class="card mode" data-mode="rp"><span class="ic">🥊</span><span><b>לקוח קשוח (AI)</b><small class="muted">שיחה מול לקוח שמתנגד, וציון מהמאמן.</small></span></button>
+        </div>
+        <div class="sec">
+          <div class="sec-title">🏅 טבלת הכרישים</div>
+          <div class="tabs2" id="boardTabs"><button class="on" data-b="xp">נקודות</button><button data-b="deals">סגירות</button><button data-b="best">שיא משחק</button></div>
+          <div class="board" id="board"></div>
+          <p class="muted small" id="boardNote" style="margin-top:8px"></p>
+        </div>
+      </div>
+      <div id="game" class="hide"></div>
+    </section>
 
+    <!-- ═══ עוד ═══ -->
+    <section class="view" id="v-more" data-group="more">
+      <div class="view-head"><h1>☰ עוד כלים</h1></div>
+      <div class="grid2" id="tiles">
+        <a class="tile" href="#courses"><span class="ic">🎓</span><span><b>הקורסים בקצרה</b><small>הסבר פשוט ופיץ' לכל קורס</small></span></a>
+        <a class="tile" href="#calc"><span class="ic">🧮</span><span><b>מחשבון מחיר</b><small>חבילה מול קורסים, לחודש וליום</small></span></a>
+        <a class="tile" href="#whatsapp"><span class="ic">💬</span><span><b>הודעות וואטסאפ</b><small>תבניות מוכנות להעתקה</small></span></a>
+        <a class="tile" href="#scripts"><span class="ic">📜</span><span><b>תסריטים מלאים</b><small>גלגל המזל, בוטקאמפ, לקוח שהתקרר</small></span></a>
+        <a class="tile" href="#discovery"><span class="ic">❓</span><span><b>שאלות בירור</b><small>השאלות שמוציאות את הכאב</small></span></a>
+        <a class="tile" href="#method"><span class="ic">🧠</span><span><b>השיטה</b><small>14 עקרונות וסרטוני חובה</small></span></a>
+        <a class="tile" href="#rules"><span class="ic">⛔</span><span><b>קווים אדומים</b><small>מה אסור להבטיח</small></span></a>
+      </div>
+    </section>
+
+    <section class="view" id="v-courses" data-group="more">
+      <div class="view-head"><h1>🎓 הקורסים בקצרה</h1><p>בלי רקע טכני: מה זה, משל, ופיץ' של 30 שניות.</p></div>
+      <div class="chips scroll" id="courseFilter" style="margin-bottom:12px"></div>
+      <div class="grid2" id="courseList"></div>
+      <div class="sec"><div class="sec-title">📖 מילון מונחים</div><div class="grid3" id="glossary"></div></div>
+    </section>
+
+    <section class="view" id="v-calc" data-group="more">
+      <div class="view-head"><h1>🧮 מחשבון מחיר</h1><p>סמנו מה הלקוח רוצה, ותראו אם חבילה משתלמת יותר.</p></div>
+      <div class="calc-list" id="calcList"></div>
+      <p style="margin:14px 0">תשלומים: <select class="field" id="calcPays" style="width:auto;display:inline-block;padding:8px"></select></p>
+      <div class="card" id="calcOut"></div>
+    </section>
+
+    <section class="view" id="v-whatsapp" data-group="more">
+      <div class="view-head"><h1>💬 וואטסאפ</h1><p>מחליפים את מה שבסוגריים. קצר, אישי, ונגמר בשאלה.</p></div>
+      <div class="grid2" id="waList"></div>
+    </section>
+
+    <section class="view" id="v-scripts" data-group="more">
+      <div class="view-head"><h1>📜 תסריטים מלאים</h1><p>לכל סוג ליד. לשיחה רגילה, השתמשו במסך "שיחה".</p></div>
+      <div class="chips scroll" id="scriptNav" style="margin-bottom:12px"></div>
+      <div class="stack" id="scriptList"></div>
+    </section>
+
+    <section class="view" id="v-discovery" data-group="more">
+      <div class="view-head"><h1>❓ שאלות בירור</h1><p>השליטה בשיחה נמצאת בשאלות. שואלים, מקשיבים, ושואלים "למה דווקא זה?".</p></div>
+      <div class="grid2" id="discList"></div>
+    </section>
+
+    <section class="view" id="v-method" data-group="more">
+      <div class="view-head"><h1>🧠 השיטה</h1><p>בהשראת <a id="mentorLink" target="_blank" rel="noopener"><span id="mentorName"></span></a>, מאמן מכירות עם 30 שנות ניסיון.</p></div>
+      <div class="grid2" id="principles"></div>
+      <div class="sec"><div class="sec-title">▶️ סרטוני חובה (5 דקות כל אחד)</div><div class="grid2" id="videos"></div></div>
+    </section>
+
+    <section class="view" id="v-rules" data-group="more">
+      <div class="view-head"><h1>⛔ קווים אדומים</h1><p>הבטחה שלא מתקיימת הופכת לביקורת רעה ולבקשת החזר.</p></div>
+      <div class="stack" id="rulesList"></div>
+      <div class="card sec small">אתר: <a href="https://netme.co.il" target="_blank" rel="noopener">netme.co.il</a> · וואטסאפ: <a href="https://wa.me/972504998661" target="_blank" rel="noopener">050-4998661</a> · <a href="https://netme.co.il/gift" target="_blank" rel="noopener">הטבות החודש</a> · <a href="https://netme.co.il/bootcamp" target="_blank" rel="noopener">בוטקאמפ</a> · <a href="https://netme.co.il/blog" target="_blank" rel="noopener">בלוג</a></div>
+    </section>
+
+    <section class="view admin-off" id="v-admin" data-group="more">
+      <div class="view-head"><h1>⚙️ ניהול משתמשים</h1><p>מחיקה מחליפה את מפתח ההצפנה, כך שמי שנמחק לא יכול להיכנס יותר.</p></div>
+      <div class="card stack">
+        <b>GitHub Token (פעם אחת, רק במכשיר שלך)</b>
+        <p class="muted small">צרו ב-<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub ← Fine-grained token</a>: רק המאגר <b>menachem-hamocher</b>, הרשאת Contents: <b>Read and write</b>.</p>
+        <input id="ghToken" class="field" type="password" autocomplete="off" data-lpignore="true" placeholder="github_pat_…">
+      </div>
+      <form class="card stack sec" id="addUser">
+        <b>משתמש חדש</b>
+        <input id="newName" class="field" autocomplete="off" placeholder="שם משתמש" required>
+        <input id="newPass" class="field" type="password" autocomplete="new-password" placeholder="סיסמה (לפחות 8 תווים)" required minlength="8">
+        <select id="newRole" class="field"><option value="user">איש מכירות</option><option value="admin">מנהל</option></select>
+        <div style="display:flex;gap:8px"><button class="btn" style="flex:1">הוסף</button><button type="button" class="btn ghost" id="genPass">סיסמה חזקה</button></div>
+      </form>
+      <p id="adminMsg" style="font-weight:800;margin-top:12px"></p>
+      <div class="stack sec" id="userList"></div>
+      <div class="sec"><div class="sec-title">🤖 התנגדויות שנוספו ע"י ה-AI</div><div class="stack" id="learnedList"></div></div>
+    </section>
+  </main>
 </div>
+
 <script src="assets/app.js"></script>
 <script type="module" src="assets/auth.js"></script>
 </body>
