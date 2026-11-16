@@ -35,6 +35,7 @@
   </div>
   <nav class="tabs">
     <a href="#home">בית</a>
+    <a href="#ask">🤖 שאל את מנחם</a>
     <a href="#objections">בנק התנגדויות</a>
     <a href="#scripts">תסריטי שיחה</a>
     <a href="#match">מנוע התאמה</a>
@@ -93,6 +94,17 @@
     </div>
   </section>
 
+  <!-- ASK -->
+  <section class="view" id="v-ask">
+    <h2>🤖 שאל את מנחם</h2>
+    <p class="lead">הלקוח אמר משהו שלא מופיע בבנק? כתבו מה הוא אמר, במילים שלו, ומנחם ינסח תשובה לפי השיטה שלנו ולפי הנתונים של נטמי. התנגדות חדשה נוספת אוטומטית לבנק, כדי שכל הצוות ייהנה ממנה.</p>
+    <div class="card">
+      <textarea id="aiInput" class="field" rows="3" placeholder='למשל: "אני מחכה לראות אם אקבל מלגה" או "חבר שלי עשה קורס ולא מצא עבודה"'></textarea>
+      <div class="btns" style="justify-content:flex-start;margin-top:10px"><button class="btn" id="aiAsk">תן לי תשובה</button></div>
+    </div>
+    <div id="aiOut" class="section"></div>
+  </section>
+
   <!-- OBJECTIONS -->
   <section class="view" id="v-objections">
     <h2>בנק התנגדויות</h2>
@@ -125,12 +137,15 @@
   <!-- COURSES -->
   <section class="view" id="v-courses">
     <h2>החבילות</h2>
-    <p class="lead">החבילות הן המוצר הראשי. כל חבילה: 4 קורסים ב-5,000 ש"ח, עד 12 תשלומים, גישה מיידית לכולם.</p>
+    <p class="lead">לכל קורס יש הסבר בשפה פשוטה, משל, פיץ' של 30 שניות ותשובה לשאלה נפוצה, בלי צורך ברקע טכני. החבילות הן המוצר הראשי. כל חבילה: 4 קורסים ב-5,000 ש"ח, עד 12 תשלומים, גישה מיידית לכולם.</p>
     <div class="grid g2" id="bundleList"></div>
     <h2 class="section">כל הקורסים</h2>
     <p class="lead">כל קורס בודד: 2,490 ש"ח (במקום 3,500). כולל: עברית, מעבדות, גישה לכל החיים, ליווי בוואטסאפ ותעודת סיום.</p>
     <div class="chips" id="courseFilter" style="margin-bottom:14px"></div>
     <div class="grid g2" id="courseList"></div>
+    <h2 class="section">מילון מונחים</h2>
+    <p class="lead">המילים שהלקוח ישמע מכם, ומה הן אומרות בשפה פשוטה.</p>
+    <div class="grid g3" id="glossary"></div>
   </section>
 
   <!-- CALC -->
@@ -214,6 +229,9 @@
     </form>
     <p id="adminMsg" style="font-weight:700;margin-top:14px"></p>
     <div class="grid section" id="userList"></div>
+    <h2 class="section">התנגדויות שנוספו ע"י ה-AI</h2>
+    <p class="lead">כל התנגדות חדשה ששואלים ב"שאל את מנחם" נשמרת כאן ובבנק. עברו עליהן מדי פעם, ומחקו תשובה שלא מתאימה.</p>
+    <div class="grid" id="learnedList"></div>
   </section>
 </main>
 

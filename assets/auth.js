@@ -26,11 +26,71 @@ async function enter(vault, kRaw, id) {
   if (!u) throw new Error('gone');
   session = { kRaw, id, role: u.role, name: await C.userName(u, kRaw), plaintext };
   new Function(plaintext)();
+  const learned = await C.decryptLearned(vault, kRaw);
+  learned.forEach(o => { if (!window.OBJECTIONS.some(x => x.id === o.id)) window.OBJECTIONS.push(o); });
+  setupAI();
   $('#login').classList.add('hide');
   $('#app').classList.remove('hide');
   $('#whoami').textContent = session.name;
   if (session.role === 'admin') setupAdmin();
   window.startApp();
+}
+
+// ───────── מנוע AI ─────────
+// הדפדפן שולח לשרת (Cloudflare Worker) את ההקשר והשאלה. השרת מחזיק את מפתח ה-API.
+// התנגדות חדשה מוצפנת כאן, בדפדפן, ורק אז נשלחת לשמירה. השרת לא רואה את המפתח K.
+function knowledge() {
+  const F = window.COURSE_FACTS, ex = window.EXPLAIN || {};
+  const lines = [];
+  lines.push(`מכללת נטמי (NetMe), ${F.site}. מאז ${F.since}, ${F.graduates} בוגרים. לימודים אונליין מוקלטים בעברית, בקצב אישי, גישה לכל החיים כולל עדכונים, ליווי אישי בוואטסאפ, וובינרים חיים, קהילה, מעבדות מעשיות, תעודת סיום של המכללה, סיוע בקורות חיים, לינקדאין והכנה לראיונות ללא התחייבות להשמה. מרצים בוגרי 8200, ממר"ם ותקשוב ואנשי תעשייה. שיעור לדוגמה חינם בעמוד ה-CCNA. בוטקאמפ רשתות חינמי (71 שיעורים, הרשמה מוקדמת). גלגל מזל חודשי בהטבות, זכייה תקפה 24 שעות, אין כפל מבצעים. מחירים: קורס בודד ${F.single} ש"ח (במקום ${F.singleList}), חבילה של 4 קורסים ${F.bundle} ש"ח, עד ${F.maxPayments} תשלומים לחבילות. מחירי השקה שמשתנים.`);
+  lines.push('\nחבילות:');
+  window.BUNDLES.forEach(b => lines.push(`- ${b.name}: ${b.courses.map(id => window.COURSES.find(c => c.id === id).name).join(', ')}. ${b.price} ש"ח במקום ${b.list}. ${b.pitch}`));
+  lines.push('\nקורסים:');
+  window.COURSES.forEach(c => lines.push(`- ${c.name} (${c.hours}; ${c.beginner ? 'מתאים למתחילים' : 'דורש רקע'}): ${(ex[c.id] || {}).what || c.hook} תפקידים: ${c.roles}.`));
+  lines.push('\nעקרונות השיטה:');
+  window.PRINCIPLES.forEach(p => lines.push(`- ${p.t}: ${p.d}`));
+  lines.push('\nקווים אדומים (אסור בשום מקרה):');
+  window.RED_LINES.forEach(r => lines.push(`- ${r.t}: ${r.d}`));
+  lines.push('\nקטגוריות: ' + window.OBJECTION_CATS.map(c => `${c.id}=${c.name}`).join(', '));
+  lines.push('\nדוגמה לתסריט בפורמט הנדרש:\n' + window.OBJECTIONS.find(o => o.id === 'think').script.trim());
+  return lines.join('\n');
+}
+
+function setupAI() {
+  const cfg = window.AI_CONFIG || {};
+  const enabled = !!(cfg.url && cfg.key);
+  let ctx = null;
+  window.MM_AI = {
+    enabled,
+    async ask(question) {
+      ctx = ctx || knowledge();
+      const existing = window.OBJECTIONS.map(o => `${o.id}: ${o.q}`).join('\n');
+      const r = await fetch(cfg.url + '/ask', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-MM-Key': cfg.key },
+        body: JSON.stringify({ context: ctx, existing, question })
+      });
+      if (!r.ok) throw new Error(r.status === 401 ? 'אין הרשאה לשרת ה-AI' : 'שגיאת שרת ' + r.status);
+      const a = await r.json();
+      const hit = a.existing_id && window.OBJECTIONS.find(o => o.id === a.existing_id);
+      if (hit) return { existing: hit };
+      const objection = {
+        id: 'ai-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        cat: window.OBJECTION_CATS.some(c => c.id === a.cat) ? a.cat : 'opening',
+        q: a.q, alt: [question, ...(a.alt || [])], real: a.real, script: a.script, tip: a.tip,
+        ai: true, by: session.name, at: new Date().toISOString().slice(0, 10)
+      };
+      let saved = false, saveError = '';
+      try {
+        const box = await C.encryptData(session.kRaw, JSON.stringify(objection));
+        const s = await fetch(cfg.url + '/learn', {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'X-MM-Key': cfg.key },
+          body: JSON.stringify({ id: objection.id, box })
+        });
+        saved = s.ok; if (!s.ok) saveError = 'שגיאה ' + s.status;
+      } catch (e) { saveError = e.message; }
+      return { objection, saved, saveError };
+    }
+  };
 }
 
 async function boot() {
@@ -85,9 +145,17 @@ function setupAdmin() {
     }, `המשתמש "${name}" נוסף. שלחו לו את הקישור, שם המשתמש והסיסמה.`);
     $('#addUser').reset();
   });
-  $('#userList').addEventListener('click', async e => {
+  $('#learnedList').addEventListener('click', onAct);
+  $('#userList').addEventListener('click', onAct);
+  async function onAct(e) {
     const b = e.target.closest('[data-act]'); if (!b) return;
     const id = b.dataset.id, name = b.dataset.name;
+    if (b.dataset.act === 'view') { location.hash = 'objections'; setTimeout(() => { const c = document.getElementById('o-' + id); if (c) { c.classList.add('open'); c.scrollIntoView(); } }, 150); return; }
+    if (b.dataset.act === 'unlearn') {
+      if (!confirm(`למחוק מהבנק את ״${name}״?`)) return;
+      await mutate(async v => { v.learned = (v.learned || []).filter(l => l.id !== id); return v; }, 'ההתנגדות נמחקה מהבנק.');
+      return;
+    }
     if (b.dataset.act === 'del') {
       if (!confirm(`למחוק את "${name}"? הגישה שלו תיחסם מיד, וכל השאר יישארו מחוברים.`)) return;
       await mutate(async v => {
@@ -107,7 +175,7 @@ function setupAdmin() {
         return v;
       }, `הסיסמה של "${name}" עודכנה.`);
     }
-  });
+  }
   renderUsers();
 }
 
@@ -127,6 +195,12 @@ async function renderUsers() {
       ${me ? '' : `<button class="chip" style="color:var(--danger)" data-act="del" data-id="${u.id}" data-name="${esc(name)}">מחיקה</button>`}</div>`);
   }
   $('#userList').innerHTML = rows.join('');
+  const learned = await C.decryptLearned(v, session.kRaw);
+  $('#learnedList').innerHTML = learned.length ? learned.map(o => `<div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <span style="flex:1"><b>״${esc(o.q)}״</b><br><small class="muted">${esc(o.by || '')} · ${esc(o.at || '')}</small></span>
+    <button class="chip" data-act="view" data-id="${o.id}">הצג</button>
+    <button class="chip" style="color:var(--danger)" data-act="unlearn" data-id="${o.id}" data-name="${esc(o.q)}">מחק מהבנק</button></div>`).join('')
+    : '<p class="muted">עוד לא נוספו התנגדויות דרך "שאל את מנחם".</p>';
 }
 
 // קורא את הגרסה העדכנית מ-GitHub, מפעיל שינוי, ושומר

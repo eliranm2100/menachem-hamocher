@@ -47,7 +47,7 @@ window.startApp = function () {
   // ── objections ──
   function objCard(o) {
     return `<article class="card obj" id="o-${o.id}" data-cat="${o.cat}">
-      <button aria-expanded="false"><span class="q">${esc(o.q)}</span>${o.hot ? '<span class="hot">🔥 נפוץ</span>' : ''}<span class="cat">${esc(catName(o.cat))}</span><span class="arrow">▾</span></button>
+      <button aria-expanded="false"><span class="q">${esc(o.q)}</span>${o.hot ? '<span class="hot">🔥 נפוץ</span>' : ''}${o.ai ? '<span class="hot" title="נוסף אוטומטית ע״י מנוע ה-AI">🤖 AI</span>' : ''}<span class="cat">${esc(catName(o.cat))}</span><span class="arrow">▾</span></button>
       <div class="body">
         <div class="real"><b>מה באמת עומד מאחורי זה: </b>${esc(o.real)}</div>
         ${renderScript(o.script)}
@@ -114,6 +114,16 @@ window.startApp = function () {
   $('#videos').innerHTML = MENTOR.videos.map(v => `<div class="card video"><a href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener"><span class="play">▶</span><span>${esc(v.t)}</span></a></div>`).join('');
 
   // ── courses ──
+  function explainBlock(id) {
+    const e = (window.EXPLAIN || {})[id]; if (!e) return '';
+    return `<div class="explain">
+      <p><b>🧩 במילים פשוטות: </b>${esc(e.what)}</p>
+      <p><b>🎯 משל: </b>${esc(e.like)}</p>
+      <p><b>💼 מה עושים בעבודה: </b>${esc(e.day)}</p>
+      <div class="line m"><span class="who">פיץ' של 30 שניות</span>${esc(e.pitch)}<button class="copy" data-copy="${esc(e.pitch)}">העתק</button></div>
+      ${(e.qa || []).map(([q, a]) => `<p class="qa"><b>ל: ${esc(q)}</b><br>${esc(a)}</p>`).join('')}
+    </div>`;
+  }
   function courseCard(c) {
     const nb = bundleById(c.next) || courseById(c.next);
     return `<article class="card course" data-g="${c.g}">
@@ -121,9 +131,10 @@ window.startApp = function () {
       <h3 style="margin-top:8px">${esc(c.name)}</h3>
       <div class="meta">${esc(c.hours)} · ${nis(F.single)} <s>${nis(F.singleList)}</s></div>
       <p><b>${esc(c.hook)}</b></p>
-      <dl><dt>למי</dt><dd>${esc(c.who)}</dd><dt>דרישות קדם</dt><dd>${esc(c.pre)}</dd>
+      ${explainBlock(c.id)}
+      <details><summary>פרטים טכניים</summary><dl><dt>למי</dt><dd>${esc(c.who)}</dd><dt>דרישות קדם</dt><dd>${esc(c.pre)}</dd>
       <dt>תפקידים בסיום</dt><dd>${esc(c.roles)}</dd><dt>נקודות מכירה</dt><dd>${esc(c.sell)}</dd>
-      ${nb ? `<dt>הצעד הבא / אפסייל</dt><dd>${esc(nb.name)}</dd>` : ''}</dl>
+      ${nb ? `<dt>הצעד הבא / אפסייל</dt><dd>${esc(nb.name)}</dd>` : ''}</dl></details>
       <p style="margin:10px 0 0"><a href="${F.site}/courses/${pageSlug(c.id)}" target="_blank" rel="noopener">עמוד הקורס באתר ←</a></p></article>`;
   }
   function pageSlug(id) { return ({ 'cisco-collab': 'cisco-collaboration', 'python': 'python-fundamentals', 'ai-pro': 'ai-pro-architect', 'cyber-defense': 'cyber-defense-network-architecture', 'ai-dev-bundle': 'ai-developer-automation' })[id] || id; }
@@ -131,7 +142,7 @@ window.startApp = function () {
     <span class="badge">חבילה · 4 קורסים</span><h3 style="margin-top:8px">${esc(b.name)}</h3>
     <div class="price">${nis(b.price)}<s>${nis(b.list)}</s></div>
     <div class="meta">${esc(b.hours)} · עד ${F.maxPayments} תשלומים (כ-${nis(Math.round(b.price / F.maxPayments))} לחודש) · כל קורס יוצא ${nis(b.price / 4)}</div>
-    <p><b>${esc(b.pitch)}</b></p>
+    ${explainBlock(b.id)}
     <dl><dt>הקורסים</dt><dd>${b.courses.map(id => esc(courseById(id).name)).join(' · ')}</dd><dt>למי למכור</dt><dd>${esc(b.for)}</dd></dl>
     <p style="margin:10px 0 0"><a href="${F.site}/courses/${pageSlug(b.id)}" target="_blank" rel="noopener">עמוד החבילה באתר ←</a></p></article>`).join('');
   $('#courseFilter').innerHTML = `<button class="chip on" data-g="all">הכול</button><button class="chip" data-g="beg">למתחילים</button>` + COURSE_GROUPS.map(g => `<button class="chip" data-g="${g.id}">${esc(g.name)}</button>`).join('');
@@ -142,6 +153,58 @@ window.startApp = function () {
     const g = b.dataset.g;
     $$('#courseList .course').forEach((el, i) => { const c = COURSES[i]; el.classList.toggle('hide', !(g === 'all' || (g === 'beg' ? c.beginner : c.g === g))); });
   });
+
+  $('#glossary').innerHTML = (window.GLOSSARY || []).map(([t, d]) => `<div class="card"><b>${esc(t)}</b><p class="muted" style="margin:4px 0 0">${esc(d)}</p></div>`).join('');
+
+  // ── שאל את מנחם (AI) ──
+  const words = s => norm(s).split(/[\s,.?!:;()\/-]+/).filter(w => w.length > 1);
+  function relevance(o, q) {
+    const hay = norm([o.q, ...(o.alt || [])].join(' ') + ' ' + o.q), body = norm(o.real + ' ' + o.script);
+    const forms = w => /^[הבלומשכ]/.test(w) && w.length > 3 ? [w, w.slice(1)] : [w];
+    return words(q).filter(w => w.length > 2).reduce((s, w) => s + (forms(w).some(f => hay.includes(f)) ? 3 : forms(w).some(f => body.includes(f)) ? 1 : 0), 0);
+  }
+  function localMatches(q) {
+    return OBJECTIONS.map(o => [o, relevance(o, q)]).filter(x => x[1] >= 3).sort((a, b) => b[1] - a[1]).slice(0, 3).map(x => x[0]);
+  }
+  const aiOut = $('#aiOut'), aiBtn = $('#aiAsk'), aiIn = $('#aiInput');
+  function addToBank(o) {
+    if (OBJECTIONS.some(x => x.id === o.id)) return;
+    OBJECTIONS.push(o);
+    objList.insertAdjacentHTML('beforeend', objCard(o));
+  }
+  window.mmAddLearned = addToBank;
+  async function askAI() {
+    const q = aiIn.value.trim(); if (!q) return;
+    const local = localMatches(q);
+    let html = local.length ? `<h3>מהבנק הקיים</h3><div class="chips" style="margin-bottom:16px">${local.map(o => `<a href="#" class="chip" data-obj="${o.id}">״${esc(o.q)}״</a>`).join('')}</div>` : '';
+    if (!window.MM_AI || !window.MM_AI.enabled) {
+      aiOut.innerHTML = html + `<div class="card"><p style="margin:0"><b>מנוע ה-AI עוד לא מחובר.</b> בינתיים, הנוסחה שעובדת על כל התנגדות:</p>${renderScript(`
+מ: אני מבין לגמרי, ואני שמח שאתה אומר את זה.
+מ: רק תענה לי בכנות: אם זה לא היה עניין, היית מתקדם היום?
+מ: אז לגבי מה אתה עוד לא בטוח?
+> שקט. לחכות לתשובה. ההתנגדות האמיתית תצא, ואותה מחפשים בבנק.`)}</div>`;
+      return;
+    }
+    aiBtn.disabled = true; aiBtn.textContent = 'מנחם חושב…';
+    aiOut.innerHTML = html + '<div class="card muted">✨ מנחם מנסח תשובה…</div>';
+    try {
+      const r = await window.MM_AI.ask(q);
+      if (r.existing) {
+        aiOut.innerHTML = html + `<div class="card answer"><b>ההתנגדות הזאת כבר בבנק:</b> <a href="#" data-obj="${r.existing.id}">״${esc(r.existing.q)}״ ←</a></div>`;
+      } else {
+        addToBank(r.objection);
+        aiOut.innerHTML = html + `<h3>תשובת מנחם</h3>` + objCard(r.objection).replace('class="card obj"', 'class="card obj open"').replace(`id="o-${r.objection.id}"`, '') +
+          `<p class="muted" style="margin-top:8px">${r.saved ? '✓ ההתנגדות נוספה לבנק לכל הצוות.' : '⚠ התשובה לא נשמרה בבנק (' + esc(r.saveError || '') + ').'}</p>`;
+      }
+    } catch (e) {
+      aiOut.innerHTML = html + `<div class="card" style="color:var(--danger)">לא הצלחתי לקבל תשובה: ${esc(e.message)}. נסו שוב בעוד רגע.</div>`;
+    }
+    aiBtn.disabled = false; aiBtn.textContent = 'תן לי תשובה';
+  }
+  aiBtn.addEventListener('click', askAI);
+  aiIn.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); askAI(); } });
+  aiOut.addEventListener('click', e => { const b = e.target.closest('.obj > button'); if (b) b.parentElement.classList.toggle('open'); });
+  window.mmRenderScript = renderScript;
 
   // ── matcher ──
   const MQ = [

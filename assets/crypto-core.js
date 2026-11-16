@@ -90,5 +90,16 @@ export async function rotate(vault, oldK, plaintext) {
     const name = await userName(u, oldK);
     users.push({ ...u, name: await aesEnc(K2, enc.encode(name)), wrap: await wrapFor(u.pub, newK) });
   }
-  return { kRaw: newK, vault: { ...vault, users, data: await encryptData(newK, plaintext) } };
+  const learned = [];
+  for (const l of vault.learned || []) learned.push({ id: l.id, box: await encryptData(newK, await decryptData({ data: l.box }, oldK)) });
+  return { kRaw: newK, vault: { ...vault, users, learned, data: await encryptData(newK, plaintext) } };
+}
+
+// התנגדויות שנוספו ע"י ה-AI: נשמרות מוצפנות ב-vault.learned = [{id, box}]
+export async function decryptLearned(vault, kRaw) {
+  const out = [];
+  for (const l of vault.learned || []) {
+    try { out.push({ ...JSON.parse(await decryptData({ data: l.box }, kRaw)), id: l.id }); } catch (e) {}
+  }
+  return out;
 }

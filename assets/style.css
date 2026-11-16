@@ -230,3 +230,12 @@ ol.flow { padding: 0; margin: 0; }
 .form-row { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
 .btn:disabled { opacity: .6; }
 .admin-off { display: none !important; }
+
+/* explain + ask */
+.explain { background: var(--surface-2); border-radius: 12px; padding: 12px 14px; margin: 10px 0; font-size: .95rem; }
+.explain p { margin: 0 0 8px; }
+.explain .line { margin: 10px 0; }
+.explain .qa { background: var(--client-soft); border-radius: 10px; padding: 8px 12px; }
+.explain .qa b { color: var(--client); }
+details summary { cursor: pointer; color: var(--ink-2); font-size: .9rem; margin: 6px 0; }
+textarea.field { resize: vertical; font-size: 1.05rem; }
